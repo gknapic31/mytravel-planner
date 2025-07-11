@@ -20,7 +20,10 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
-
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '@/service/firebaseConfig';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useNavigate } from 'react-router-dom';
 
 
 function CreateTrip() {
@@ -31,6 +34,7 @@ function CreateTrip() {
 
   const [loading, setLoading] = useState(false);
 
+  const navigate=useNavigate();
   const handleInputChange = (name, value) => {
     setFormData({
       ...formData,
@@ -58,28 +62,40 @@ function CreateTrip() {
       return;
     }
 
-    if (
-      (formData?.noOfDays > 5 && !formData?.location) ||
-      !formData?.budget ||
-      !formData?.traveler
-    ) {
-      toast("Please fill all details");
+    if (formData?.noOfDays > 5 && !formData?.location || !formData?.budget || !formData?.traveler) {
+      toast("Please fill all details")
       return;
     }
-    const FINAL_PROMPT = AI_PROMPT.replace(
-      "{location}",
-      formData?.location?.label
-    )
-      .replace("{totalDays}", formData?.noOfDays)
-      .replace("{traveler}", formData?.traveler)
-      .replace("{budget}", formData?.budget)
-      .replace("{totalDays}", formData?.noOfDays);
-    console.log(FINAL_PROMPT);
-
+    setLoading(true);
+    toast('Please wait... We are working on it...')
+    const FINAL_PROMPT = AI_PROMPT
+      .replace('{location}', formData?.location?.label)
+      .replace('{totalDays}', formData?.noOfDays)
+      .replace('{traveler}', formData?.traveler)
+      .replace('{budget}', formData?.budget)
+      .replace('{totalDays}', formData?.noOfDays)
     const result = await chatSession.sendMessage(FINAL_PROMPT);
-    console.log(result?.response?.text());
-    console.log(text);
+
+    console.log("--", result?.response?.text());
+    setLoading(false);
+    SaveAiTrip(result?.response?.text())
   };
+
+  const SaveAiTrip = async (TripData) => {
+
+    setLoading(true);
+    const user = JSON.parse(localStorage.getItem('user'));
+    const docId = Date.now().toString()
+
+    await setDoc(doc(db, "AITrips", docId), {
+      userSelection: formData,
+      tripData: JSON.parse(TripData),
+      userEmail: user?.email,
+      id: docId
+    });
+    setLoading(false);
+    navigate('/view-trip/'+docId)
+  }
 
 
   const GetUserProfile = (tokenInfo) => {
@@ -173,7 +189,13 @@ function CreateTrip() {
         </div>
       </div>
       <div className="my-10 justify-center flex">
-        <Button onClick={OnGenerateTrip}>Get My Travel Plan</Button>
+        <Button
+          disabled={loading}
+          onClick={OnGenerateTrip}>
+          {loading ?
+            <AiOutlineLoading3Quarters className='h-7 w-7 animate-spin' /> : 'Generate Trip'
+          }
+        </Button>
       </div>
 
 
