@@ -62,8 +62,19 @@ function CreateTrip() {
       return;
     }
 
-    if (formData?.noOfDays > 5 && !formData?.location || !formData?.budget || !formData?.traveler) {
-      toast("Please fill all details")
+    if (
+      !formData?.location ||
+      !formData?.budget ||
+      !formData?.traveler ||
+      !formData?.noOfDays ||
+      formData.noOfDays < 1
+    ) {
+      toast("Please fill all details correctly");
+      return;
+    }
+
+    if (formData.noOfDays > 10) {
+      toast("Maximum number of days is 10");
       return;
     }
     setLoading(true);
@@ -140,9 +151,17 @@ function CreateTrip() {
             How long will your adventure last?
           </h2>
           <Input
-            placeholder={"Ex.2"}
+            placeholder={"Ex. 2"}
             type="number"
-            onChange={(e) => handleInputChange("noOfDays", e.target.value)}
+            max="10"
+            min="1"
+            value={formData?.noOfDays || ""}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              if (value <= 10) {
+                handleInputChange("noOfDays", value);
+              }
+            }}
           />
         </div>
 
@@ -203,7 +222,6 @@ function CreateTrip() {
         <DialogContent>
           <DialogHeader>
               <DialogDescription>
-              <img src="/logo.svg" />
               <h2 className='font-bold text-lg mt-7'>Sign In With Google</h2>
               <p>Sign in to the App with Google authentication securely</p>
 
