@@ -31,7 +31,7 @@ function Viewtrip() {
     }
 
   return (
-    <div className='p-10 md:px-20 lg:px-44 xl:px-56'>
+    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-6'>
         {/* Information Section  */}
             <InfoSection trip={trip} />
         {/* Recommended Hotels  */}

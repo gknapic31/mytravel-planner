@@ -1,48 +1,75 @@
-import React from "react";
-import { Button } from "../ui/button";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Plane, Compass, MapPin, ArrowRight } from "lucide-react";
+import { Button } from "../ui/button";
 
 function Hero() {
+  const [animateElements, setAnimateElements] = useState(false);
+
+  useEffect(() => {
+    // Trigga animaciju nakon mounta
+    setTimeout(() => setAnimateElements(true), 300);
+  }, []);
+
   return (
-    <section className="relative w-full h-screen flex items-center justify-center overflow-hidden">
-      {/* Blurred background image */}
-      <img
-        src="/travel.jpg"
-        alt="Travel background"
-        className="absolute inset-0 w-full h-full object-cover blur-sm scale-125"
-      />
-      {/* Overlay for contrast */}
-      <div className="absolute inset-0 bg-black/40" />
-      <div className="relative z-10 flex flex-col items-center px-6 gap-8">
-        <h1 className="font-extrabold text-[48px] md:text-[64px] text-center mt-10 text-white drop-shadow-lg animate-fade-in-up">
-          <span className="text-gradient bg-clip-text text-transparent">
-            What’s Your Next Destination?
-          </span>
-          <br />
-          <span className="text-white font-light text-[28px] md:text-[36px]">
-            Plan less, travel more.
-          </span>
-        </h1>
-        <p className="text-xl md:text-2xl text-gray-200 text-center max-w-2xl drop-shadow">
-          Turn ideas into adventures with your personal trip planner.
-        </p>
-        <Link to={"/create-trip"}>
-          <Button className="bg-[#303030] text-white text-lg px-8 py-4 rounded-full shadow-lg hover:bg-gray-800 hover:scale-105 transition-transform duration-200">
-            Plan your trip now
-          </Button>
-        </Link>
+    <section className="min-h-screen relative overflow-hidden">
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 animate-pulse"></div>
+
+      {/* Floating Elements */}
+      <div className="absolute top-20 left-10 text-white/20 animate-bounce">
+        <Plane size={60} />
       </div>
-      <style>
-        {`
-          @keyframes fade-in-up {
-            0% { opacity: 0; transform: translateY(40px);}
-            100% { opacity: 1; transform: translateY(0);}
-          }
-          .animate-fade-in-up {
-            animation: fade-in-up 1s cubic-bezier(.4,0,.2,1) both;
-          }
-        `}
-      </style>
+      <div className="absolute bottom-20 right-10 text-white/20 animate-pulse">
+        <Compass size={80} />
+      </div>
+      <div
+        className="absolute top-40 right-20 text-white/20 animate-spin"
+        style={{ animationDuration: "20s" }}
+      >
+        <MapPin size={40} />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-[80vh] text-center px-6">
+        <div
+          className={`transform transition-all duration-1000 ${
+            animateElements
+              ? "translate-y-0 opacity-100"
+              : "translate-y-10 opacity-0"
+          }`}
+        >
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+            <span className="bg-gradient-to-r from-orange-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
+              What’s Your Next
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">
+              Destination?
+            </span>
+          </h1>
+
+          <p className="text-2xl text-white/90 mb-4 font-light">
+            Plan less, travel more.
+          </p>
+
+          <p className="text-lg text-white/70 mb-12 max-w-2xl mx-auto">
+            Turn ideas into adventures with your personal trip planner.
+          </p>
+
+          {/* Gradient Button using shadcn/ui */}
+          <Link to={"/create-trip"}>
+            <Button variant="gradient">
+              Plan your trip now
+              <ArrowRight
+                className="ml-2 group-hover:translate-x-1 transition-transform duration-300"
+                size={24}
+              />
+            </Button>
+          </Link>
+
+        </div>
+      </div>
     </section>
   );
 }

@@ -5,7 +5,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-
 import {
   Dialog,
   DialogContent,
@@ -13,7 +12,8 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog"
 import { FcGoogle } from "react-icons/fc";
-
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from "axios";
 
 function Header() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -23,69 +23,98 @@ function Header() {
     console.log(user);
   }, [user]);
 
-  const handleLogin = () => {
-    // Hardcoded user data
-    const mockUser = {
-      name: "Test User",
-      email: "test.user@example.com",
-      picture: "https://via.placeholder.com/150",
-    };
+  const login = useGoogleLogin({
+    onSuccess: (codeResp) => GetUserProfile(codeResp),
+    onError: (error) => console.log(error),
+  });
 
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    setUser(mockUser);
-    setOpenDialog(false);
+  const GetUserProfile = (tokenInfo) => {
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`, {
+      headers: {
+        Authorization: `Bearer ${tokenInfo?.access_token}`,
+        Accept: 'Application/json'
+      }
+    }).then((resp) => {
+      localStorage.setItem('user', JSON.stringify(resp.data));
+      setUser(resp.data);
+      setOpenDialog(false);
+      localStorage.reload();
+    });
   };
 
   const handleLogout = () => {
     localStorage.clear();
     setUser(null);
+    localStorage.reload();
   };
 
   return (
-    <div className='p-3 shadow-sm flex justify-between items-center px-5 nav-bg-color'>
+    <nav className="fixed w-full z-20 top-0 left-0 p-6 flex justify-between items-center backdrop-blur-md bg-black/20 transition-all duration-300">
+
       <a href='/'>
-        <img src='/logo1.svg' alt='Logo' />
+        <img src='/logo.png' alt='Logo' className="h-10 w-auto"/>
       </a>
-      <div>
+
+      <div className="flex items-center space-x-4">
         {user ? (
-          <div className='flex items-center gap-3'>
-            <a href='/create-trip'>
-              <Button variant="outline" className="rounded-full">+ Create Trip</Button>
+          <>
+            <a href="/create-trip">
+              <button className="px-6 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                + Create Trip
+              </button>
             </a>
-            <a href='/my-trips'>
-              <Button variant="outline" className="rounded-full">My Trips</Button>
+            <a href="/my-trips">
+              <button className="px-6 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                My Trips
+              </button>
             </a>
             <Popover>
               <PopoverTrigger>
-                <img src={user?.picture} className='h-[35px] w-[35px] rounded-full' alt='User avatar' />
+                <img
+                  src={user?.picture}
+                  className="h-10 w-10 rounded-full border-2 border-white/30 hover:scale-105 transition-transform"
+                  alt="User avatar"
+                />
               </PopoverTrigger>
-              <PopoverContent>
-                <h2 className='cursor-pointer' onClick={handleLogout}>Logout</h2>
+              <PopoverContent className="w-40">
+                <h2
+                  className="cursor-pointer text-center text-red-500 font-semibold"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </h2>
               </PopoverContent>
             </Popover>
-          </div>
+          </>
         ) : (
-          <Button onClick={() => setOpenDialog(true)}>Sign In</Button>
+          <button
+            onClick={() => setOpenDialog(true)}
+            className="px-6 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
+          >
+            Sign In
+          </button>
         )}
       </div>
+
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogDescription>
-              <h2 className='font-bold text-lg mt-7'>Sign In</h2>
+              <h2 className="font-bold text-lg mt-7">Sign In With Google</h2>
               <p>Sign in to the App with Google authentication securely</p>
               <Button
-                onClick={handleLogin}
+                onClick={login}
                 className="w-full mt-5 flex gap-4 items-center"
               >
-                <FcGoogle className='h-7 w-7' />
-                Sign In
+                <FcGoogle className="h-7 w-7" />
+                Sign In With Google
               </Button>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
-    </div>
+    </nav>
   );
 }
+
 export default Header;

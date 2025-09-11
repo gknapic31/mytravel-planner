@@ -9,20 +9,22 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm px-4 py-2",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md text-sm px-4 py-2",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm px-4 py-2",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md text-sm px-4 py-2",
+        ghost: "hover:bg-accent hover:text-accent-foreground rounded-md text-sm px-4 py-2",
         link: "text-primary underline-offset-4 hover:underline",
+        gradient:
+          "rounded-full px-12 py-4 text-xl bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg hover:scale-110 transition-transform duration-300",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        default: "h-10",
+        sm: "h-9 rounded-md px-3 text-sm",
+        lg: "h-11 rounded-md px-8 text-base",
         icon: "h-10 w-10",
       },
     },
