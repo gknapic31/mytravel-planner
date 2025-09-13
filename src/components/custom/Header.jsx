@@ -12,6 +12,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog"
 import { FcGoogle } from "react-icons/fc";
+import { FiInfo } from "react-icons/fi"; 
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 
@@ -94,6 +95,29 @@ function Header() {
             Sign In
           </button>
         )}
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="p-2 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300">
+              <FiInfo size={20} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-100 text-sm">
+            <p className="font-semibold">Autor: Gabrijela Knapić</p>
+            <p className="text-gray-600 dark:text-gray-300">
+              Završni rad: Razvoj web aplikacije za planiranje putovanja
+            </p>
+            <p className="text-gray-600 dark:text-gray-300">
+              Naziv sveučilišta: Sveučilište Jurja Dobrile u Puli
+            </p>
+            <p className="text-gray-600 dark:text-gray-300">
+              Naziv fakulteta: Fakultet informatike
+            </p>
+            <p className="text-gray-600 dark:text-gray-300">
+              <b>Mentor:</b> prof. dr. sc. Tihomir Orehovački
+            </p>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
